@@ -13,19 +13,108 @@ Install CRC, prereqs, and MAS Core.
 ```shell
 $ sudo yum update && yum install jq git
 $ crc setup
-$ crc config set cpus 12
-$ crc config set memory 32000
+$ crc config set cpus 16
+$ crc config set memory 48000
 $ crc config set disk-size 300
 $ crc config set disable-update-check true
 $ crc start
 $ eval $(crc oc-env)
 $ oc login -u kubeadmin -p ************ https://api.crc.testing:6443
+```
+
+This is using the manual process and uses shell scripts 
+
+```shell
 $ git clone https://github.com/pvkvicky2000/mas-standalone-install
 $ cd mas-standalone-install
 $ export ENTITLEMENT_KEY=<Your Entitlement Key> # Get from https://myibm.ibm.com/products-services/containerlibrary
 $ ./setup.sh
 ```
 
+This script uses IBM containers to do one click install , assuming that the license.dat file also exists and is in the path.
+
+```shell
+###docker install
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+###Only for CRC
+crc config set enable-cluster-monitoring true
+crc stop && crc start
+
+oc login -u kubeadmin -p ********** https://api.crc.testing:6443
+
+export CRC_HOST_IP=192.168.130.1
+
+/home/vijay/crc/mas-standalone-installation/managed-nfs-storage.sh
+
+####
+
+docker run -ti -v /path/to/license.dat:/opt/app-root/src/license.dat quay.io/ibmmas/ansible-devops:latest bash
+
+export ENTITLEMENT_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+export IBM_ENTITLEMENT_KEY=$ENTITLEMENT_KEY
+export MAS_ENTITLEMENT_KEY=$ENTITLEMENT_KEY
+
+export storage_class=managed-nfs-storage   ## Chanage this for storage class
+
+export MAS_INSTANCE_ID=local   ### Change this for instance
+export MAS_WORKSPACE_ID=local  ### Change this for instance
+export MAS_APP_ID=manage
+export MAS_APPWS_COMPONENTS="base=latest,health=latest"
+export MANAGE_AIO_FLAG=false
+
+export MAS_CONFIG_DIR=/opt/app-root/src/masconfig
+
+export SLS_LICENSE_ID=10005ad2dea7    ### get this from license.dat file
+export SLS_LICENSE_FILE=/opt/app-root/src/license.dat   
+
+export UDS_CONTACT_EMAIL=pvkvicky@gmail.com  
+export UDS_CONTACT_FIRSTNAME=Vijay
+export UDS_CONTACT_LASTNAME=Krishna
+
+export PROMETHEUS_ALERTMGR_STORAGE_CLASS=$storage_class           
+export PROMETHEUS_STORAGE_CLASS=$storage_class
+export PROMETHEUS_USERWORKLOAD_STORAGE_CLASS=$storage_class
+export GRAFANA_INSTANCE_STORAGE_CLASS=$storage_class
+export MONGODB_STORAGE_CLASS=$storage_class
+export UDS_STORAGE_CLASS=$storage_class
+export DB2_META_STORAGE_CLASS=$storage_class
+export DB2_DATA_STORAGE_CLASS=$storage_class
+export DB2_BACKUP_STORAGE_CLASS=$storage_class
+export DB2_LOGS_STORAGE_CLASS=$storage_class
+export DB2_TEMP_STORAGE_CLASS=$storage_class
+
+export DB2_INSTANCE_NAME=maxdb8               ## set the DB parameters
+export DB2_DBNAME=MAXDB8
+export DB2_WORKLOAD=ANALYTICS
+export DB2_LDAP_USERNAME=maximo
+export DB2_LDAP_PASSWORD=maximo_2012
+export DB2_CPU_REQUESTS=2000m
+export DB2_CPU_LIMITS=2000m
+export DB2_MEMORY_REQUESTS=4Gi
+export DB2_MEMORY_LIMITS=4Gi
+
+export MONGODB_REPLICAS=1                  ## set the Mongo parameters
+export MONGODB_NAMESPACE=mongo
+
+export MAS_CHANNEL=8.9.x                   ## set the MAS Version
+
+export SLS_DOMAIN=apps-crc.testing         ## set the Mas domain name 
+
+
+oc login --token=xxxx --server=https://myocpserver
+rm -rf /opt/app-root/src/masconfig
+mkdir /opt/app-root/src/masconfig
+
+ansible-playbook ibm.mas_devops.oneclick_core
+ansible-playbook ibm.mas_devops.oneclick_add_manage
+
+```
+
+
+#This should be run only in case the onclick_add_manage is not used
 The additional script, ```mas-ws_setup.sh```, enables to complete MAS workspace configuration except license file uploading to start deployment for MAS apps like Maximo Manage. To put your license file path to ```SLS_LICENSE_FILE```, all of the steps of Suite setup are completed without any manual interventions.
 
 ```shell
