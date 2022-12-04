@@ -1,0 +1,71 @@
+apiVersion: db2u.databases.ibm.com/v1
+kind: Db2uCluster
+metadata:
+  name: db2oltp-maximo
+  namespace: ibm-db2
+spec:
+  account:
+    privileged: true
+  environment:
+    database:
+      name: maxdb8
+    dbType: db2oltp
+    ldap:
+      enabled: true
+  license:
+    accept: true
+  podConfig:
+    db2u:
+      resource:
+        db2u:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+  size: 1
+  storage:
+  - name: meta
+    spec:
+      accessModes:
+      - ReadWriteMany
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: managed-nfs-storage
+    type: create
+  - name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: managed-nfs-storage
+    type: template
+  - name: backup
+    spec:
+      accessModes:
+      - ReadWriteMany
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: managed-nfs-storage
+    type: create
+  - name: activelogs
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: managed-nfs-storage
+    type: template
+  - name: tempts
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: managed-nfs-storage
+    type: template
+  version: s11.5.8.0
