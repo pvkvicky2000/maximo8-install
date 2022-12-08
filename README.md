@@ -117,7 +117,7 @@ export DB2_CPU_LIMITS=2000m
 export DB2_MEMORY_REQUESTS=4Gi
 export DB2_MEMORY_LIMITS=4Gi
 
-export MONGODB_REPLICAS=1                  ## set the Mongo parameters
+export MONGODB_REPLICAS=3                  ## set the Mongo parameters , sometimes there is a bug and it always hardcodes to 3 , so set it 3 so that it doesnt fail
 export MONGODB_NAMESPACE=mongo
 
 export MAS_CHANNEL=8.9.x                   ## set the MAS Version
