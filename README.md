@@ -31,6 +31,27 @@ $ export ENTITLEMENT_KEY=<Your Entitlement Key> # Get from https://myibm.ibm.com
 $ ./setup.sh
 ```
 
+For Azure Deployment , add these options to storage class and use Azure-files storage
+
+```yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile
+provisioner: kubernetes.io/azure-file
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+  - mfsymlinks
+  - nobrl
+  - cache=none
+parameters:
+  skuName: Standard_LRS
+```
+
+
 This script uses IBM containers to do one click install , assuming that the license.dat file also exists and is in the path.
 
 ```shell
