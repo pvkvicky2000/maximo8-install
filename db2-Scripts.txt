@@ -1,3 +1,12 @@
+/*
+Ldap Scripts to be run in LDAP container
+*/
+/opt/ibm/ldap_scripts/addLdapUser.py -u maximo -p maximo_2012 -r admin
+
+
+/*
+Run in db container
+*/
 db2 update db cfg for maxdb8 using SELF_TUNING_MEM ON
 db2 update db cfg for maxdb8 using APPGROUP_MEM_SZ 16384 DEFERRED
 db2 update db cfg for maxdb8 using APPLHEAPSZ 2048 AUTOMATIC DEFERRED
